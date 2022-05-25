@@ -1,3 +1,5 @@
 @import "colours.scss";
-@import "mixins.scss";
-@import "variables.scss";
+
+$bg: $dark;
+$dark-text: $grey-900;
+$light-text: $grey-50;

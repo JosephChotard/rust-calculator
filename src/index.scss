@@ -1,4 +1,4 @@
-@import "theme/theme.scss";
+@import "theme";
 
 body {
   margin: 0;
@@ -7,6 +7,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   @include applyBgWithCorrectTextColor($bg);
+  box-sizing: border-box;
 }
 
 code {

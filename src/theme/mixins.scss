@@ -1,5 +1,5 @@
 @import "colours.scss";
-@import "variables.scss";
+@import "theme.scss";
 
 @function getTextColorBasedOnBG($color) {
   @if (lightness($color) > 50) {

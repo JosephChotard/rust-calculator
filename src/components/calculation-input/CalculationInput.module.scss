@@ -1,0 +1,16 @@
+@import "../../theme";
+
+.wrapper {
+  width: 100%;
+}
+
+.input {
+  font-size: $font-large;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0.4rem;
+  background-color: $grey-900;
+  color: $grey-50;
+}

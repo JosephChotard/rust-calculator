@@ -8,7 +8,7 @@ function App() {
   useEffect(() => {
     invoke('get_system_theme')
       .then((v) => {
-        console.log(v)
+        console.log("theme", v)
       })
   }, [])
 
@@ -17,7 +17,8 @@ function App() {
   }
 
   return (
-    <div className={styles.app}>
+    <div className={`${styles.app} theme-dark`}>
+      hello
       <input type="text"
         value={inputValue}
         onChange={onChange}

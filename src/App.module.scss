@@ -1,9 +1,5 @@
-@import "theme/mixins.scss";
-@import "theme/colours.scss";
+@import "theme/theme.scss";
 
 .app {
   font-size: large;
-  height: 100vh;
-  width: 100vw;
-  @include applyBgWithCorrectTextColor($bg);
 }

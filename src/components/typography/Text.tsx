@@ -1,21 +1,15 @@
 import classnames from 'classnames'
 import { ElementType, FC, ReactNode } from 'react'
 import { sprinkles, Sprinkles } from '../../styles'
+import { textColours } from '../../styles/theme/theme.css'
 import { Box } from '../system/box/Box'
 import * as styles from './typography.css'
 
-const colorMap = {
-  neutral: { lightMode: 'grey700', darkMode: 'grey100' },
-  strong: { lightMode: 'grey900', darkMode: 'grey100' },
-  code: { lightMode: 'white' },
-  link: { lightMode: 'grey700', darkMode: 'grey100' },
-  secondary: { lightMode: 'grey500', darkMode: 'grey400' },
-  highlight: { lightMode: 'pink500' },
-} as const
+
 
 interface TextStyleProps {
   size?: keyof typeof styles.text
-  color?: keyof typeof colorMap
+  color?: keyof typeof textColours
   weight?: keyof typeof styles.weight
   align?: Sprinkles['textAlign']
   baseline?: boolean
@@ -38,7 +32,7 @@ export const useTextStyles = ({
   classnames(
     styles.font[type],
     baseline ? styles.text[size].trimmed : styles.text[size].untrimmed,
-    sprinkles({ color: colorMap[color], textAlign: align }),
+    sprinkles({ color: textColours[color], textAlign: align }),
     styles.weight[weight],
   )
 

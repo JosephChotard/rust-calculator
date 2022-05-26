@@ -81,6 +81,15 @@ const calculateTypographyStyles = (
   }
 }
 
+export const textColours = {
+  neutral: { lightMode: 'grey700', darkMode: 'grey100' },
+  strong: { lightMode: 'grey900', darkMode: 'grey100' },
+  code: { lightMode: 'white' },
+  link: { lightMode: 'grey700', darkMode: 'grey100' },
+  secondary: { lightMode: 'grey500', darkMode: 'grey400' },
+  highlight: { lightMode: 'pink500' },
+} as const
+
 const rootTheme = createGlobalTheme(":root", {
   fonts: {
     body: "system-ui, sans-serif",
@@ -276,7 +285,7 @@ export const lightTheme = createTheme(contract, {
   colors: {
     primary: '#e6e6e6',
     secondary: '#00f0f0',
-    background: '#fafafa',
+    background: colours.white,
   }
 })
 
@@ -284,11 +293,11 @@ export const darkTheme = createTheme(contract, {
   colors: {
     primary: '#00f0f0',
     secondary: '#e6e6e6',
-    background: "#202226",
+    background: colours.black,
   }
 })
 
 export const theme = {
   ...rootTheme,
-  contract
+  dynamicTheme: contract
 }

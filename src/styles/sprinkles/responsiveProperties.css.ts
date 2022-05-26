@@ -21,8 +21,8 @@ const margins = {
 
 export const responsiveProperties = defineProperties({
   conditions: Object.fromEntries(
-    Object.entries(breakpoints).filter(([key]) => key !== 'mobile').map(([key, bp]) => [
-      key, { '@media': `screen and (min-width: ${bp}px)` }
+    Object.entries(breakpoints).map(([key, bp]) => [
+      key, key === 'mobile' ? {} : { '@media': `screen and (min-width: ${bp}px)` }
     ])
   ),
   defaultCondition: 'mobile',

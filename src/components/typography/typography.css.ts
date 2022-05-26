@@ -1,43 +1,7 @@
-import { createTextStyle } from '@capsizecss/vanilla-extract'
-import { style, styleVariants } from '@vanilla-extract/css'
-import { mapToProperty, queries, responsiveStyle, theme } from '../../styles'
+import { styleVariants } from '@vanilla-extract/css'
+import { mapToProperty, theme } from '../../styles'
+import { makeTypographyRules } from './utils.css'
 
-const makeTypographyRules = (textDefinition: typeof theme.text.standard) => {
-  const { fontSize: mobileFontSize, lineHeight: mobileLineHeight } =
-    textDefinition.mobile
-
-  const { fontSize: tabletFontSize, lineHeight: tabletLineHeight } =
-    textDefinition.tablet
-
-  const { fontSize: desktopFontSize, lineHeight: desktopLineHeight } =
-    textDefinition.tablet
-
-  return {
-    untrimmed: style(
-      responsiveStyle({
-        mobile: {
-          fontSize: mobileFontSize,
-          lineHeight: mobileLineHeight,
-        },
-        tablet: {
-          fontSize: tabletFontSize,
-          lineHeight: tabletLineHeight,
-        },
-        desktop: {
-          fontSize: desktopFontSize,
-          lineHeight: desktopLineHeight,
-        },
-      }),
-    ),
-    trimmed: createTextStyle(textDefinition.mobile, {
-      // @ts-ignore TS 4.5
-      '@media': {
-        [queries.tablet]: textDefinition.tablet,
-        [queries.desktop]: textDefinition.desktop,
-      },
-    }),
-  }
-}
 
 export const font = styleVariants(theme.fonts, mapToProperty('fontFamily'))
 export const weight = styleVariants(theme.weight, mapToProperty('fontWeight'))

@@ -20,6 +20,7 @@ export const root = style({
   justifyContent: 'center',
   border: 'none',
   backgroundColor: 'transparent',
+  borderRadius: '50%',
   ':focus-visible': {
     boxShadow: `0px 0px 0px 3px ${focusRingColor}`,
   },

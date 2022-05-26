@@ -9,5 +9,10 @@ globalStyle('*', {
 })
 
 globalStyle(':root', {
-  backgroundColor: theme.contract.colors.background,
+  backgroundColor: theme.dynamicTheme.colors.background,
+})
+
+globalStyle('main', {
+  minHeight: '100vh',
+  width: '100vw',
 })

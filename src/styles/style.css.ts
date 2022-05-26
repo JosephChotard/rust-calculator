@@ -8,8 +8,6 @@ globalStyle('*', {
   padding: 0,
 })
 
-globalStyle('#app', {
+globalStyle(':root', {
   backgroundColor: theme.contract.colors.background,
-  height: '100vh',
-  width: '100vw',
 })

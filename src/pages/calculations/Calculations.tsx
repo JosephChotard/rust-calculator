@@ -1,14 +1,14 @@
-import { CalculationInput } from '../../components/calculation-input'
+import { Text } from '../../components/typography'
 
 function CalculationsPage() {
 
   return (
-    <main>
+    <div>
       <div>
-
+        <Text>This is my text</Text>
       </div>
-      <CalculationInput />
-    </main>
+      {/* <CalculationInput /> */}
+    </div>
   )
 }
 

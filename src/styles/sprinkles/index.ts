@@ -1,4 +1,4 @@
-import { createSprinkles } from "@vanilla-extract/sprinkles"
-import { responsiveProperties } from "./responsiveProperties.css"
+export { darkMode, lightMode } from './colorProperties.css'
+export { sprinkles } from './sprinkles.css'
+export type { Sprinkles } from './sprinkles.css'
 
-export const sprinkles = createSprinkles(responsiveProperties)

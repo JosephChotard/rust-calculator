@@ -1,3 +1,3 @@
-export * from './sprinkles'
+export * from './sprinkles/sprinkles.css'
 export * from './theme'
 

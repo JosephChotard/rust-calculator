@@ -1,20 +1,15 @@
-import { invoke } from '@tauri-apps/api'
-import { useEffect, useState } from 'react'
-import styles from './App.module.scss'
+import { ColorModeProvider } from './components/colour-mode/ColourMode'
+import CalculationsPage from './pages/calculations/Calculations'
+import './styles/style.css'
+
 
 function App() {
 
-  useEffect(() => {
-    invoke('get_system_theme')
-      .then((v) => {
-        console.log("theme", v)
-      })
-  }, [])
 
   return (
-    <div className={`${styles.app} theme-dark`}>
-      hello
-    </div>
+    <ColorModeProvider>
+      <CalculationsPage />
+    </ColorModeProvider>
   )
 }
 

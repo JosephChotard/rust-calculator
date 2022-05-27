@@ -1,3 +1,4 @@
+import { tauri } from '@tauri-apps/api'
 import {
   createContext, ReactNode, useContext, useEffect,
   useState
@@ -21,10 +22,17 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
   const [colorMode, setColorMode] = useState<ColorMode | null>(null)
 
   useEffect(() => {
-    setColorMode(
-      document.documentElement.classList.contains(darkTheme) ? darkTheme : lightTheme,
-    )
+    tauri.invoke<boolean>('get_system_theme').then((dark_mode) => {
+      console.log(dark_mode)
+      setter(dark_mode ? darkTheme : lightTheme)
+    })
   }, [])
+
+  const requestChange = (colorMode: ColorMode) => {
+    setter(colorMode)
+    tauri.invoke<void>('set_system_theme', { darkMode: colorMode === darkTheme })
+      .catch((err) => console.error(err))
+  }
 
   const setter = (c: ColorMode) => {
     setColorMode(c)
@@ -37,7 +45,7 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
     <ColorModeContext.Provider
       value={{
         colorMode,
-        setColorMode: setter,
+        setColorMode: requestChange,
       }}
     >
       {children}

@@ -1,15 +1,34 @@
-use tauri::AppHandle;
+use super::config::Config;
+use std::sync::Mutex;
+use tauri::State;
 
+/// Returns the dark_mode preference
+///
+/// Arguments:
+///
+/// * `config`: This is the global preference state (tauri passses it to the function for us).
+///
+/// Returns:
+///
+/// Whether or not the user wants to use dark mode.
 #[tauri::command]
-pub async fn get_system_theme(app: AppHandle) -> String {
-  let mode = dark_light::detect();
+pub fn get_system_theme(config: State<Mutex<Config>>) -> bool {
+  config.lock().unwrap().dark_mode
+}
 
-  match mode {
-    dark_light::Mode::Dark => "dark".to_string(),
-    dark_light::Mode::Light => "light".to_string(),
-  }
+/// It takes a `State<Mutex<Config>>` and a `bool` and updates the `Config` with the new `dark_mode`
+/// value
+///
+/// Arguments:
+///
+/// * `config`: This is the global preference state (tauri passes it to the function for us).
+/// * `dark_mode`: bool - This is the value that will be passed to the command.
+#[tauri::command]
+pub fn set_system_theme(config: State<Mutex<Config>>, dark_mode: bool) {
+  let mut config = config.lock().unwrap();
+  config.update_dark_mode(dark_mode);
 }
 
 pub fn get_handlers() -> Box<dyn Fn(tauri::Invoke<tauri::Wry>) + Send + Sync> {
-  Box::new(tauri::generate_handler![get_system_theme])
+  Box::new(tauri::generate_handler![get_system_theme, set_system_theme])
 }

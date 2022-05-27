@@ -81,15 +81,6 @@ const calculateTypographyStyles = (
   }
 }
 
-export const textColours = {
-  neutral: { lightMode: 'grey700', darkMode: 'grey100' },
-  strong: { lightMode: 'grey900', darkMode: 'grey100' },
-  code: { lightMode: 'white' },
-  link: { lightMode: 'grey700', darkMode: 'grey100' },
-  secondary: { lightMode: 'grey500', darkMode: 'grey400' },
-  highlight: { lightMode: 'pink500' },
-} as const
-
 const rootTheme = createGlobalTheme(":root", {
   fonts: {
     body: "system-ui, sans-serif",

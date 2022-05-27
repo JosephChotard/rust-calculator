@@ -1,6 +1,6 @@
 import { style } from "@vanilla-extract/css"
 import { sprinkles, theme } from "../../styles"
-import { textColours } from "../../styles/theme/theme.css"
+import { textColours } from "../../styles/theme"
 import { makeTypographyRules } from "../typography/utils.css"
 
 export const input = style([
@@ -14,5 +14,7 @@ export const input = style([
   }),
   {
     outline: 'none',
+    border: 'none',
+    padding: theme.spacing.xsmall
   }
 ])

@@ -274,4 +274,13 @@ export const colours = {
   "blueGrey700": "#455a64",
   "blueGrey800": "#37474f",
   "blueGrey900": "#263238",
-}
+} as const
+
+export const textColours = {
+  neutral: { lightMode: 'grey700', darkMode: 'grey100' },
+  strong: { lightMode: 'grey900', darkMode: 'grey100' },
+  code: { lightMode: 'white' },
+  link: { lightMode: 'grey700', darkMode: 'grey100' },
+  secondary: { lightMode: 'grey400', darkMode: 'grey400' },
+  highlight: { lightMode: 'pink500' },
+} as const

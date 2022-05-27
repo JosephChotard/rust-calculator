@@ -2,6 +2,10 @@ import { defineProperties } from "@vanilla-extract/sprinkles"
 import { darkTheme, theme } from "../theme"
 
 
+const availableColours = {
+  ...theme.palette,
+  ...theme.dynamicTheme.colors
+}
 export const colorProperties = defineProperties({
   conditions: {
     lightMode: {},
@@ -9,7 +13,7 @@ export const colorProperties = defineProperties({
   },
   defaultCondition: 'lightMode',
   properties: {
-    background: theme.palette,
-    color: theme.palette,
+    background: availableColours,
+    color: availableColours,
   },
 })

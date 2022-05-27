@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "calculator"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "The best calculator in the world"
+authors = ["Joseph Chotard"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "calculator"
 edition = "2021"
 rust-version = "1.57"
 

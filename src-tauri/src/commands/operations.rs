@@ -1,4 +1,6 @@
-use super::super::database::{get_operation_history, store_operation, Operation};
+use super::super::database::{
+  clear_operation_history, get_operation_history, store_operation, Operation,
+};
 use rusqlite::Connection;
 use std::result::Result;
 use std::sync::Mutex;
@@ -23,6 +25,23 @@ pub fn store_operation_command(
 ) -> Result<Operation, String> {
   match store_operation(&conn.lock().unwrap(), operation, result) {
     Ok(operation) => Ok(operation),
+    Err(e) => Err(format!("{}", e).into()),
+  }
+}
+
+/// Clears the operation history
+///
+/// Arguments:
+///
+/// * `conn`: State<Mutex<Connection>> - this is the connection to the database.
+///
+/// Returns:
+///
+/// A Result<(), String>
+#[tauri::command]
+pub fn clear_operation_history_command(conn: State<Mutex<Connection>>) -> Result<(), String> {
+  match clear_operation_history(&conn.lock().unwrap()) {
+    Ok(_) => Ok(()),
     Err(e) => Err(format!("{}", e).into()),
   }
 }

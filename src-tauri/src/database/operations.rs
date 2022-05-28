@@ -31,6 +31,20 @@ pub fn get_operation_history(conn: &Connection) -> Result<Vec<Operation>> {
   Ok(operations)
 }
 
+/// Delete all operations from the database
+///
+/// Arguments:
+///
+/// * `conn`: &Connection - this is the connection to the database.
+///
+/// Returns:
+///
+/// Nothing.
+pub fn clear_operation_history(conn: &Connection) -> Result<()> {
+  conn.execute("DELETE FROM operations;", params![])?;
+  Ok(())
+}
+
 /// Stores an operation and its result in the database.
 ///
 /// Arguments:

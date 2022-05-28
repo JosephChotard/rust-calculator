@@ -17,6 +17,7 @@ fn main() {
 
   tauri::Builder::default()
     .menu(menu::init())
+    .on_menu_event(menu::on_menu_event)
     .manage(Mutex::new(config))
     .manage(Mutex::new(conn))
     .setup(|app| {

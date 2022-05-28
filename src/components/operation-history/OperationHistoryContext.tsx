@@ -1,4 +1,5 @@
 import { tauri } from "@tauri-apps/api"
+import { listen, UnlistenFn } from '@tauri-apps/api/event'
 import { createContext, FC, useEffect, useState } from "react"
 
 export interface Operation {
@@ -32,6 +33,16 @@ export const OperationHistoryProvider: FC<OperationHistoryProviderProps> = ({ ch
       console.log(history)
       setHistory(history)
     })
+    let unlisten: UnlistenFn
+    (async () => {
+      unlisten = await listen('history_cleared', (history) => {
+        setHistory([])
+      })
+    })()
+
+    return () => {
+      unlisten?.()
+    }
   }, [])
 
   return (

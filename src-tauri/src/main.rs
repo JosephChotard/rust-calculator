@@ -2,18 +2,23 @@
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
+use database::get_connection;
 use std::sync::Mutex;
 
 mod commands;
 mod config;
+mod database;
 mod menu;
 
 fn main() {
   let config = config::get_config();
 
+  let conn = get_connection().expect("Could not get connection");
+
   tauri::Builder::default()
     .menu(menu::init())
     .manage(Mutex::new(config))
+    .manage(Mutex::new(conn))
     .setup(|app| {
       let handle = app.handle();
       config::init(handle);

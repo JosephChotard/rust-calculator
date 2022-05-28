@@ -1,4 +1,4 @@
-use super::config::Config;
+use super::super::config::Config;
 use std::sync::Mutex;
 use tauri::State;
 
@@ -27,8 +27,4 @@ pub fn get_system_theme(config: State<Mutex<Config>>) -> bool {
 pub fn set_system_theme(config: State<Mutex<Config>>, dark_mode: bool) {
   let mut config = config.lock().unwrap();
   config.update_dark_mode(dark_mode);
-}
-
-pub fn get_handlers() -> Box<dyn Fn(tauri::Invoke<tauri::Wry>) + Send + Sync> {
-  Box::new(tauri::generate_handler![get_system_theme, set_system_theme])
 }

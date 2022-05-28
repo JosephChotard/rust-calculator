@@ -1,3 +1,4 @@
+import { tauri } from "@tauri-apps/api"
 import { FC, useState } from "react"
 import * as styles from "./MathInput.css"
 
@@ -12,7 +13,12 @@ const MathInput: FC = () => {
     if (event.key === "Enter") {
       event.preventDefault()
       console.log(equation)
-      setEquation("")
+      tauri.invoke('store_operation_command', {
+        operation: equation,
+        result: 42
+      }).finally(() => {
+        setEquation("")
+      })
     }
   }
 

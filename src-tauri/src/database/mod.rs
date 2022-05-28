@@ -1,5 +1,5 @@
 mod connection;
-mod store_maths;
+mod operations;
 
 pub use connection::get_connection;
-pub use store_maths::store_operation;
+pub use operations::{get_operation_history, store_operation, Operation};

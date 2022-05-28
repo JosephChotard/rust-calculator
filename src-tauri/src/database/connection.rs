@@ -18,7 +18,7 @@ pub fn get_connection() -> Result<Connection> {
 
 fn create_initial_tables(conn: &Connection) -> Result<()> {
   conn.execute(
-    "CREATE TABLE IF NOT EXISTS operations (id integer NOT NULL, operation text NOT NULL, result num NOT NULL, created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (id));",
+    "CREATE TABLE IF NOT EXISTS operations (id integer NOT NULL, operation text NOT NULL, result num NOT NULL, PRIMARY KEY (id));",
     params![]
   )?;
   conn.execute(

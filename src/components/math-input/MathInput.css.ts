@@ -15,6 +15,7 @@ export const input = style([
   {
     outline: 'none',
     border: 'none',
-    padding: theme.spacing.xsmall
+    padding: theme.spacing.xsmall,
+    width: '100%',
   }
 ])

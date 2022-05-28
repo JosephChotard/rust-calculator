@@ -1,6 +1,6 @@
 import { tauri } from '@tauri-apps/api'
 import {
-  createContext, ReactNode, useContext, useEffect,
+  createContext, FC, ReactNode, useContext, useEffect,
   useState
 } from 'react'
 import { darkTheme, lightTheme } from '../../styles'
@@ -53,7 +53,7 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
   )
 }
 
-export const ColorModeToggle = () => {
+export const ColorModeToggle: FC = () => {
   const { colorMode, setColorMode } = useContext(ColorModeContext)
 
   return (

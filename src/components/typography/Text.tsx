@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import { ElementType, FC, ReactNode } from 'react'
 import { sprinkles, Sprinkles } from '../../styles'
-import { textColours } from '../../styles/theme/theme.css'
+import { textColours } from '../../styles/theme'
 import { Box } from '../system/box/Box'
 import * as styles from './typography.css'
 

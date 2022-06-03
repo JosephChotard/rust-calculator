@@ -332,6 +332,7 @@ dependencies = [
  "confy",
  "dark-light",
  "directories 4.0.1",
+ "fnv",
  "nom",
  "rusqlite",
  "serde",

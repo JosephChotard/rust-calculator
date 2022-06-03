@@ -5,10 +5,14 @@
 use database::get_connection;
 use std::sync::Mutex;
 
+#[macro_use]
+extern crate nom;
+
 mod commands;
 mod config;
 mod database;
 mod menu;
+mod parser;
 
 fn main() {
   let config = config::get_config();

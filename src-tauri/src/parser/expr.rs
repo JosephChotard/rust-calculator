@@ -34,7 +34,6 @@ impl Expr {
 
     // Evaluates the expression with the given context.
     pub fn eval_with_context<C: ContextProvider>(&self, ctx: C) -> Result<f64, Error> {
-        println!("expr: {:?}", self.rpn);
         use super::parsers::Operation::*;
         use super::parsers::Token::*;
 
@@ -109,7 +108,6 @@ impl Expr {
                 }
                 _ => return Err(Error::EvalError(format!("Unrecognized token: {:?}", token))),
             }
-            println!("{:?}", stack);
         }
 
         let r = stack.pop().expect("Stack is empty, this is impossible.");

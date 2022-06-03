@@ -10,6 +10,7 @@ extern crate nom;
 mod commands;
 mod config;
 mod database;
+mod maths;
 mod menu;
 mod parser;
 

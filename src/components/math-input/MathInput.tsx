@@ -16,8 +16,7 @@ const MathInput: FC = () => {
       event.preventDefault()
       console.log(equation)
       tauri.invoke<Operation>('store_operation_command', {
-        operation: equation,
-        result: 42
+        input: equation,
       }).then((operation) => {
         addToHistory(operation)
       }).finally(() => {

@@ -1,6 +1,7 @@
 use super::super::database::{
   clear_operation_history, get_operation_history, store_operation, Operation,
 };
+use super::super::maths::get_result;
 use rusqlite::Connection;
 use std::result::Result;
 use std::sync::Mutex;
@@ -20,12 +21,16 @@ use tauri::State;
 #[tauri::command]
 pub fn store_operation_command(
   conn: State<Mutex<Connection>>,
-  operation: &str,
-  result: f64,
+  input: &str,
 ) -> Result<Operation, String> {
-  match store_operation(&conn.lock().unwrap(), operation, result) {
-    Ok(operation) => Ok(operation),
-    Err(e) => Err(format!("{}", e).into()),
+  match get_result(input) {
+    Ok(result) => match store_operation(&conn.lock().unwrap(), input, result) {
+      Ok(operation) => Ok(operation),
+      Err(e) => Err(format!("{}", e).into()),
+    },
+    Err(err) => {
+      return Err(err.to_string());
+    }
   }
 }
 

@@ -3,8 +3,7 @@ import { sprinkles, theme } from "../../styles"
 import { textColours } from "../../styles/theme"
 import { makeTypographyRules } from "../typography/utils.css"
 
-export const input = style([
-  makeTypographyRules(theme.text.standard).trimmed,
+export const inputWrapper = style([
   sprinkles({
     color: textColours.strong,
     background: {
@@ -13,9 +12,33 @@ export const input = style([
     },
   }),
   {
-    outline: 'none',
-    border: 'none',
     padding: theme.spacing.xsmall,
     width: '100%',
+    display: 'flex',
+  }
+])
+
+export const input = style([
+  makeTypographyRules(theme.text.standard).trimmed,
+  sprinkles({
+    color: textColours.strong,
+  }),
+  {
+    background: 'transparent',
+    outline: 'none',
+    border: 'none',
+    flex: 1,
+  }
+])
+
+export const response = style([
+  makeTypographyRules(theme.text.small).trimmed,
+  sprinkles({
+    color: textColours.neutral,
+  }),
+  {
+    maxWidth: '20em',
+    overflow: 'scroll',
+    whiteSpace: 'pre',
   }
 ])

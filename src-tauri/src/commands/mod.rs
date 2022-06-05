@@ -8,5 +8,6 @@ pub fn get_handlers() -> Box<dyn Fn(tauri::Invoke<tauri::Wry>) + Send + Sync> {
     operations::store_operation_command,
     operations::get_operation_history_command,
     operations::clear_operation_history_command,
+    operations::get_result_command,
   ])
 }

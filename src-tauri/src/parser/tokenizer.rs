@@ -17,7 +17,7 @@ pub enum ParserError {
 impl fmt::Display for ParserError {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     match *self {
-      ParserError::UnexpectedToken(i) => write!(f, "Unexpected token at byte {}.", i),
+      ParserError::UnexpectedToken(i) => write!(f, "Unexpected token at char {}.", i + 1),
       ParserError::MissingRParen(i) => write!(
         f,
         "Missing {} right parenthes{}.",

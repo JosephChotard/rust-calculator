@@ -34,6 +34,14 @@ pub fn store_operation_command(
   }
 }
 
+#[tauri::command]
+pub fn get_result_command(input: &str) -> Result<f64, String> {
+  match get_result(input) {
+    Ok(result) => Ok(result),
+    Err(err) => Err(err.to_string()),
+  }
+}
+
 /// Clears the operation history
 ///
 /// Arguments:

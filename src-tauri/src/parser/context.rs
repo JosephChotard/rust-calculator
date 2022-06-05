@@ -65,6 +65,11 @@ pub fn min_array(xs: &[f64]) -> f64 {
 }
 
 #[doc(hidden)]
+pub fn avg_array(xs: &[f64]) -> f64 {
+  xs.iter().fold(0., |m, &x| m + x) / xs.len() as f64
+}
+
+#[doc(hidden)]
 pub fn builtin<'a>() -> Context<'a> {
   // TODO: cache this (lazy_static)
   Context::new()
@@ -125,6 +130,7 @@ impl<'a> Context<'a> {
         ctx.func2("atan2", f64::atan2);
         ctx.funcn("max", max_array, 1..);
         ctx.funcn("min", min_array, 1..);
+        ctx.funcn("avg", avg_array, 1..);
         ctx
     });
 

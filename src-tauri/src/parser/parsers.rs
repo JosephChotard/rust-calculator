@@ -75,10 +75,12 @@ fn binop(input: &str) -> IResult<&str, Token> {
   alt((
     map(tag("+"), |_| Token::Binary(Operation::Plus)),
     map(tag("-"), |_| Token::Binary(Operation::Minus)),
+    map(alt((tag("^"), tag("**"))), |_| {
+      Token::Binary(Operation::Pow)
+    }),
     map(tag("*"), |_| Token::Binary(Operation::Times)),
     map(tag("/"), |_| Token::Binary(Operation::Div)),
     map(tag("%"), |_| Token::Binary(Operation::Mod)),
-    map(tag("^"), |_| Token::Binary(Operation::Pow)),
   ))(input)
 }
 
@@ -262,6 +264,10 @@ mod tests {
     );
     assert_eq!(binop("/"), IResult::Ok(("", Token::Binary(Operation::Div))));
     assert_eq!(binop("^"), IResult::Ok(("", Token::Binary(Operation::Pow))));
+    assert_eq!(
+      binop("**"),
+      IResult::Ok(("", Token::Binary(Operation::Pow)))
+    );
     assert_eq!(binop("%"), IResult::Ok(("", Token::Binary(Operation::Mod))));
   }
 }

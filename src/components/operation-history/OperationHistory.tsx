@@ -25,7 +25,7 @@ const OperationHistory: FC = () => {
             key={index}
           >
             <Text size='code'>
-              {operation.operation} {"=>"} {operation.result}
+              {operation.operation} {"=>"} {operation.result ?? Infinity}
             </Text>
           </Box>
         ))}

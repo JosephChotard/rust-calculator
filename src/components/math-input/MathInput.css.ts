@@ -12,7 +12,7 @@ export const inputWrapper = style([
     },
   }),
   {
-    padding: theme.spacing.xsmall,
+    position: 'relative',
     width: '100%',
     display: 'flex',
   }
@@ -24,6 +24,7 @@ export const input = style([
     color: textColours.strong,
   }),
   {
+    padding: theme.spacing.xsmall,
     background: 'transparent',
     outline: 'none',
     border: 'none',
@@ -32,13 +33,17 @@ export const input = style([
 ])
 
 export const response = style([
-  makeTypographyRules(theme.text.small).trimmed,
   sprinkles({
-    color: textColours.neutral,
+    background: {
+      lightMode: 'grey800',
+      darkMode: 'grey100',
+    }
   }),
   {
-    maxWidth: '20em',
-    overflow: 'scroll',
-    whiteSpace: 'pre',
+    position: 'absolute',
+    bottom: '100%',
+    left: 0,
+    padding: theme.spacing.xsmall,
+    borderTopRightRadius: theme.border.radius.small,
   }
 ])

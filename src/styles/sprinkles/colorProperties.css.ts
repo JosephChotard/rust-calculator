@@ -6,6 +6,7 @@ const availableColours = {
   ...theme.palette,
   ...theme.dynamicTheme.colors
 }
+
 export const colorProperties = defineProperties({
   conditions: {
     lightMode: {},

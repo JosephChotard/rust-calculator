@@ -1,4 +1,5 @@
 use super::parsers::*;
+use nom::error::ErrorKind;
 use nom::Err::{Error, Failure, Incomplete};
 use std::fmt;
 
@@ -103,7 +104,15 @@ pub fn tokenize<S: AsRef<str>>(input: S) -> Result<Vec<Token>, ParserError> {
           panic!("Incomplete tokenizer error: {:?} on input: {}", n, input);
         }
         Failure(e) => {
-          panic!("Failure: {}, {:?}", input, e);
+          println!("Failure: {:?}", e.code);
+          match e.code {
+            ErrorKind::Float => {
+              return Err(ParserError::MissingArgument);
+            }
+            _ => {
+              return Err(ParserError::UnexpectedToken(input.len() - s.len()));
+            }
+          }
         }
       },
     }

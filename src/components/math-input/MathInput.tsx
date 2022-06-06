@@ -2,7 +2,9 @@ import { tauri } from "@tauri-apps/api"
 import { FC, useContext, useState } from "react"
 import { Operation, OperationHistoryContext } from "../operation-history"
 import { Box } from "../system/box/Box"
+import { Text } from "../typography"
 import * as styles from "./MathInput.css"
+
 
 const MathInput: FC = () => {
   const [equation, setEquation] = useState("")
@@ -10,7 +12,7 @@ const MathInput: FC = () => {
   const { addToHistory } = useContext(OperationHistoryContext)
 
   const updateEquation = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value
+    const input = event.target.value.toLowerCase()
     setEquation(input)
     if (input.length > 0) {
       tauri.invoke<number>("get_result_command", {
@@ -52,7 +54,15 @@ const MathInput: FC = () => {
         onChange={updateEquation}
         onKeyDown={handleKeyDown}
       />
-      <Box component='span' className={styles.response}>{response}</Box>
+      {response && (
+        <Text
+          className={styles.response}
+          size="small"
+          invertedColour={true}
+        >
+          {response}
+        </Text>
+      )}
     </Box>
   )
 }

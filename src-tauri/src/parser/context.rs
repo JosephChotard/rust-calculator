@@ -128,6 +128,7 @@ impl<'a> Context<'a> {
         ctx.func("round", f64::round);
         ctx.func("signum", f64::signum);
         ctx.func2("atan2", f64::atan2);
+        ctx.func2("logn", |base, num| f64::log(num, base));
         ctx.funcn("max", max_array, 1..);
         ctx.funcn("min", min_array, 1..);
         ctx.funcn("avg", avg_array, 1..);
@@ -367,5 +368,13 @@ mod tests {
     assert_eq!(ctx.get_var("y"), None);
     assert_eq!(ctx.eval_func("f", &[1.0]), Ok(1.));
     assert_eq!(ctx.eval_func("g", &[1.0, 2.0]), Ok(3.));
+  }
+
+  #[test]
+  fn test_default_functions() {
+    let ctx = Context::new();
+    assert_eq!(ctx.eval_func("sqrt", &[4.]), Ok(2.));
+    assert_eq!(ctx.eval_func("logn", &[10., 100.]), Ok(2.));
+    assert_eq!(ctx.eval_func("logn", &[100., 10.]), Ok(0.5));
   }
 }

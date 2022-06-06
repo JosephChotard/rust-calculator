@@ -6,34 +6,28 @@ import { Breakpoint } from "./themeUtils"
 const grid = 4
 const px = (value: string | number) => `${value}px`
 
+const arialMetrics = {
+  "familyName": "Arial",
+  "capHeight": 1467,
+  "ascent": 1854,
+  "descent": -434,
+  "lineGap": 0,
+  "unitsPerEm": 1048,
+  "xHeight": 1062
+}
+
 const fontMetrics = {
   brand: {
-    capHeight: 669,
-    ascent: 1026,
-    descent: -432,
-    lineGap: 0,
-    unitsPerEm: 1000,
+    ...arialMetrics
   },
   heading: {
-    capHeight: 700,
-    ascent: 992,
-    descent: -310,
-    lineGap: 0,
-    unitsPerEm: 1000,
+    ...arialMetrics
   },
   body: {
-    capHeight: 1443,
-    ascent: 1950,
-    descent: -494,
-    lineGap: 0,
-    unitsPerEm: 2048,
+    ...arialMetrics,
   },
   code: {
-    capHeight: 700,
-    ascent: 1060,
-    descent: -320,
-    lineGap: 0,
-    unitsPerEm: 1000,
+    ...arialMetrics
   },
 }
 
@@ -83,8 +77,8 @@ const calculateTypographyStyles = (
 
 const rootTheme = createGlobalTheme(":root", {
   fonts: {
-    body: "system-ui, sans-serif",
-    heading: "system-ui, sans-serif",
+    body: "Arial",
+    heading: "Roboto",
   },
   grid: px(grid),
   spacing: {

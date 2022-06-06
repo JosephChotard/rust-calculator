@@ -8,3 +8,24 @@ export const historyContainer = style([
     marginBottom: "4rem",
   }
 ])
+
+export const historyItem = style([
+  sprinkles({
+  }),
+  {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "1rem",
+  }
+])
+
+export const result = style([
+  sprinkles({
+    color: {
+      lightMode: 'yellow900',
+      darkMode: 'yellow200',
+    }
+  }),
+  {
+  }
+])

@@ -279,8 +279,8 @@ export const colours = {
 export const textColours = {
   neutral: { lightMode: 'grey700', darkMode: 'grey100' },
   strong: { lightMode: 'grey900', darkMode: 'grey100' },
-  code: { lightMode: 'white' },
+  code: { lightMode: 'white', darkMode: 'grey100' },
   link: { lightMode: 'grey700', darkMode: 'grey100' },
   secondary: { lightMode: 'grey400', darkMode: 'grey400' },
-  highlight: { lightMode: 'pink500' },
+  highlight: { lightMode: 'pink500', darkMode: 'pink500' },
 } as const

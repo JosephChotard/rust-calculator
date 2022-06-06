@@ -152,6 +152,12 @@ mod tests {
       number(&"123text"),
       IResult::Ok(("text", Token::Number(123f64)))
     );
+    assert!(matches!(number(&""), IResult::Err(nom::Err::Error { .. })));
+
+    assert!(matches!(
+      number(&"32143.25e"),
+      IResult::Err(nom::Err::Failure { .. })
+    ));
   }
 
   #[test]

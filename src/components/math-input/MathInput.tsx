@@ -19,10 +19,10 @@ const MathInput: FC = () => {
         input: input
       })
         .then((result) => {
-          setResponse(result.toString())
+          setResponse(result?.toString() ?? "Infinity")
         })
         .catch((error) => {
-          setResponse(error.toString())
+          setResponse(error?.toString() ?? "")
         })
     } else {
       setResponse("")

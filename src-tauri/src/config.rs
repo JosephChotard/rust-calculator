@@ -28,7 +28,7 @@ pub fn get_config() -> Config {
 }
 
 /// `Config` is a struct that has the user preferences
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Config {
   /// `dark_mode`: Whether or not the user wants to use dark mode.
   pub dark_mode: bool,

@@ -1,7 +1,8 @@
 use super::super::database::{
   clear_operation_history, get_operation_history, store_operation, Operation,
 };
-use super::super::maths::get_result;
+use super::super::maths::{evaluate, get_result};
+use super::super::parser::Context;
 use rusqlite::Connection;
 use std::result::Result;
 use std::sync::Mutex;
@@ -21,9 +22,10 @@ use tauri::State;
 #[tauri::command]
 pub fn store_operation_command(
   conn: State<Mutex<Connection>>,
+  parser_context: State<Mutex<Context>>,
   input: &str,
 ) -> Result<Operation, String> {
-  match get_result(input) {
+  match get_result(input, &mut parser_context.lock().unwrap()) {
     Ok(result) => match store_operation(&conn.lock().unwrap(), input, result) {
       Ok(operation) => Ok(operation),
       Err(e) => Err(format!("{}", e).into()),
@@ -35,8 +37,11 @@ pub fn store_operation_command(
 }
 
 #[tauri::command]
-pub fn get_result_command(input: &str) -> Result<f64, String> {
-  match get_result(input) {
+pub fn get_result_command(
+  input: &str,
+  parser_context: State<Mutex<Context>>,
+) -> Result<f64, String> {
+  match evaluate(input, &parser_context.lock().unwrap()) {
     Ok(result) => Ok(result),
     Err(err) => Err(err.to_string()),
   }

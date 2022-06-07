@@ -6,7 +6,8 @@ pub mod shunting_yard;
 pub mod tokenizer;
 
 use context::FuncEvalError;
-pub use expr::eval_str;
+pub use context::{builtin, Context, ContextProvider};
+pub use expr::eval_str_with_context;
 pub use parsers::{Operation, Token};
 use shunting_yard::RPNError;
 use std::fmt;

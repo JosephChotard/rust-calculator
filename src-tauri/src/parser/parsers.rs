@@ -46,6 +46,17 @@ fn number(input: &str) -> IResult<&str, Token> {
   map(double, |n| Token::Number(n))(input)
 }
 
+fn assignment(input: &str) -> IResult<&str, &str> {
+  tag("=")(input)
+}
+
+pub fn starts_with_assignment(input: &str) -> IResult<&str, Token> {
+  map(
+    pair(delimited(multispace0, var, multispace0), assignment),
+    |(var, _)| var,
+  )(input)
+}
+
 // Parse func( returns func
 fn func(input: &str) -> IResult<&str, Token> {
   map(terminated(ident, preceded(multispace0, tag("("))), |name| {
@@ -275,5 +286,27 @@ mod tests {
       IResult::Ok(("", Token::Binary(Operation::Pow)))
     );
     assert_eq!(binop("%"), IResult::Ok(("", Token::Binary(Operation::Mod))));
+  }
+
+  #[test]
+  fn test_assignment() {
+    assert_eq!(assignment("="), IResult::Ok(("", "=")));
+
+    assert_eq!(assignment("= 1"), IResult::Ok((" 1", "=")));
+
+    assert_eq!(
+      starts_with_assignment("var = 2"),
+      IResult::Ok((" 2", Token::Var("var".to_string())))
+    );
+
+    assert!(matches!(starts_with_assignment("1"), IResult::Err { .. }));
+    assert!(matches!(
+      starts_with_assignment("a + 2"),
+      IResult::Err { .. }
+    ));
+    assert!(matches!(
+      starts_with_assignment("= 34"),
+      IResult::Err { .. }
+    ));
   }
 }

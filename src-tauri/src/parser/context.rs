@@ -1,7 +1,7 @@
 use fnv::FnvHashMap;
 use std::f64::consts;
 use std::fmt;
-use std::rc::Rc;
+use std::sync::Arc;
 
 /// A trait of a source of variables (and constants) and functions for substitution into an
 /// evaluated expression.
@@ -20,6 +20,10 @@ pub trait ContextProvider {
   }
   fn eval_func(&self, _: &str, _: &[f64]) -> Result<f64, FuncEvalError> {
     Err(FuncEvalError::UnknownFunction)
+  }
+
+  fn var<S: Into<String>>(&mut self, var: S, value: f64) -> &mut Self {
+    self
   }
 }
 
@@ -156,11 +160,11 @@ impl<'a> Context<'a> {
   pub fn func<S, F>(&mut self, name: S, func: F) -> &mut Self
   where
     S: Into<String>,
-    F: Fn(f64) -> f64 + 'a,
+    F: Fn(f64) -> f64 + 'a + Send + Sync,
   {
     self.funcs.insert(
       name.into(),
-      Rc::new(move |args: &[f64]| {
+      Arc::new(move |args: &[f64]| {
         if args.len() == 1 {
           Ok(func(args[0]))
         } else {
@@ -175,34 +179,15 @@ impl<'a> Context<'a> {
   pub fn func2<S, F>(&mut self, name: S, func: F) -> &mut Self
   where
     S: Into<String>,
-    F: Fn(f64, f64) -> f64 + 'a,
+    F: Fn(f64, f64) -> f64 + 'a + Send + Sync,
   {
     self.funcs.insert(
       name.into(),
-      Rc::new(move |args: &[f64]| {
+      Arc::new(move |args: &[f64]| {
         if args.len() == 2 {
           Ok(func(args[0], args[1]))
         } else {
           Err(FuncEvalError::NumberArgs(2))
-        }
-      }),
-    );
-    self
-  }
-
-  /// Adds a new function of three arguments.
-  pub fn func3<S, F>(&mut self, name: S, func: F) -> &mut Self
-  where
-    S: Into<String>,
-    F: Fn(f64, f64, f64) -> f64 + 'a,
-  {
-    self.funcs.insert(
-      name.into(),
-      Rc::new(move |args: &[f64]| {
-        if args.len() == 3 {
-          Ok(func(args[0], args[1], args[2]))
-        } else {
-          Err(FuncEvalError::NumberArgs(3))
         }
       }),
     );
@@ -229,7 +214,7 @@ impl<'a> Context<'a> {
   pub fn funcn<S, F, N>(&mut self, name: S, func: F, n_args: N) -> &mut Self
   where
     S: Into<String>,
-    F: Fn(&[f64]) -> f64 + 'a,
+    F: Fn(&[f64]) -> f64 + 'a + Send + Sync,
     N: ArgGuard,
   {
     self.funcs.insert(name.into(), n_args.to_arg_guard(func));
@@ -275,7 +260,7 @@ impl<'a, T: ContextProvider> ContextProvider for &'a mut T {
   }
 }
 
-type GuardedFunc<'a> = Rc<dyn Fn(&[f64]) -> Result<f64, FuncEvalError> + 'a>;
+type GuardedFunc<'a> = Arc<dyn Fn(&[f64]) -> Result<f64, FuncEvalError> + 'a + Send + Sync>;
 
 /// Trait for types that can specify the number of required arguments for a function with a
 /// variable number of arguments.
@@ -292,12 +277,12 @@ type GuardedFunc<'a> = Rc<dyn Fn(&[f64]) -> Result<f64, FuncEvalError> + 'a>;
 /// ctx.funcn("sum", |xs| xs.iter().sum(), ..);
 /// ```
 pub trait ArgGuard {
-  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a>(self, func: F) -> GuardedFunc<'a>;
+  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a + Send + Sync>(self, func: F) -> GuardedFunc<'a>;
 }
 
 impl ArgGuard for usize {
-  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a>(self, func: F) -> GuardedFunc<'a> {
-    Rc::new(move |args: &[f64]| {
+  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a + Send + Sync>(self, func: F) -> GuardedFunc<'a> {
+    Arc::new(move |args: &[f64]| {
       if args.len() == self {
         Ok(func(args))
       } else {
@@ -308,8 +293,8 @@ impl ArgGuard for usize {
 }
 
 impl ArgGuard for std::ops::RangeFrom<usize> {
-  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a>(self, func: F) -> GuardedFunc<'a> {
-    Rc::new(move |args: &[f64]| {
+  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a + Send + Sync>(self, func: F) -> GuardedFunc<'a> {
+    Arc::new(move |args: &[f64]| {
       if args.len() >= self.start {
         Ok(func(args))
       } else {
@@ -320,8 +305,8 @@ impl ArgGuard for std::ops::RangeFrom<usize> {
 }
 
 impl ArgGuard for std::ops::RangeTo<usize> {
-  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a>(self, func: F) -> GuardedFunc<'a> {
-    Rc::new(move |args: &[f64]| {
+  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a + Send + Sync>(self, func: F) -> GuardedFunc<'a> {
+    Arc::new(move |args: &[f64]| {
       if args.len() < self.end {
         Ok(func(args))
       } else {
@@ -332,8 +317,8 @@ impl ArgGuard for std::ops::RangeTo<usize> {
 }
 
 impl ArgGuard for std::ops::Range<usize> {
-  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a>(self, func: F) -> GuardedFunc<'a> {
-    Rc::new(move |args: &[f64]| {
+  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a + Send + Sync>(self, func: F) -> GuardedFunc<'a> {
+    Arc::new(move |args: &[f64]| {
       if args.len() >= self.start && args.len() < self.end {
         Ok(func(args))
       } else if args.len() < self.start {
@@ -346,8 +331,8 @@ impl ArgGuard for std::ops::Range<usize> {
 }
 
 impl ArgGuard for std::ops::RangeFull {
-  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a>(self, func: F) -> GuardedFunc<'a> {
-    Rc::new(move |args: &[f64]| Ok(func(args)))
+  fn to_arg_guard<'a, F: Fn(&[f64]) -> f64 + 'a + Send + Sync>(self, func: F) -> GuardedFunc<'a> {
+    Arc::new(move |args: &[f64]| Ok(func(args)))
   }
 }
 

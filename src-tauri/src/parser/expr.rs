@@ -1,6 +1,6 @@
 use super::context::{builtin, ContextProvider};
 use super::extra_math::factorial;
-use super::parsers::Token;
+use super::parsers::{starts_with_assignment, Token};
 use super::shunting_yard::to_rpn;
 use super::tokenize;
 use super::Error;
@@ -24,14 +24,10 @@ use std::str::FromStr;
 #[derive(Debug, Clone, PartialEq)]
 pub struct Expr {
     rpn: Vec<Token>,
+    assign_to: Option<String>,
 }
 
 impl Expr {
-    // Evaluates the expression.
-    pub fn eval(&self) -> Result<f64, Error> {
-        self.eval_with_context(builtin())
-    }
-
     // Evaluates the expression with the given context.
     pub fn eval_with_context<C: ContextProvider>(&self, ctx: C) -> Result<f64, Error> {
         use super::parsers::Operation::*;
@@ -163,21 +159,36 @@ pub fn eval_str<S: AsRef<str>>(expr: S) -> Result<f64, Error> {
 pub fn eval_str_with_context<S: AsRef<str>, C: ContextProvider>(
     expr: S,
     ctx: C,
-) -> Result<f64, Error> {
+) -> Result<(Option<String>, f64), Error> {
     let expr = Expr::from_str(expr.as_ref())?;
 
-    expr.eval_with_context(ctx)
+    let res = expr.eval_with_context(&ctx);
+
+    match res {
+        Ok(r) => Ok((expr.assign_to, r)),
+        Err(e) => Err(e),
+    }
 }
 
 impl FromStr for Expr {
     type Err = Error;
     /// Constructs an expression by parsing a string.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let tokens = tokenize(s)?;
+        let (expr, var) = match starts_with_assignment(s) {
+            Ok((expr, var)) => match var {
+                Token::Var(name) => (expr, Some(name)),
+                _ => (s, None),
+            },
+            Err(_) => (s, None),
+        };
+        let tokens = tokenize(expr)?;
 
         let rpn = to_rpn(&tokens)?;
 
-        Ok(Expr { rpn: rpn })
+        Ok(Expr {
+            rpn: rpn,
+            assign_to: var,
+        })
     }
 }
 
@@ -231,18 +242,23 @@ mod tests {
         );
         assert_eq!(
             eval_str_with_context(
-                "phi(2., 3., 4.)",
-                Context::new().func3("phi", |x, y, z| x + y * z)
-            ),
-            Ok(2. + 3. * 4.)
-        );
-        assert_eq!(
-            eval_str_with_context(
                 "phi(2., 3.)",
                 Context::new().funcn("phi", |xs: &[f64]| xs[0] + xs[1], 2)
             ),
             Ok(2. + 3.)
         );
+    }
+
+    #[test]
+    fn test_variable_assignment() {
+        assert_eq!(Expr::from_str("a = 2").unwrap().assign_to, Some("a".into()),);
+
+        assert_eq!(
+            Expr::from_str("variable = a+b+2").unwrap().assign_to,
+            Some("variable".into()),
+        );
+
+        assert_eq!(Expr::from_str("a+b+2").unwrap().assign_to, None,);
     }
 
     #[test]

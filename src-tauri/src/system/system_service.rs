@@ -1,8 +1,5 @@
 use confy::{load, store};
 use serde::{Deserialize, Serialize};
-use tauri::AppHandle;
-
-pub fn init(_app: AppHandle) {}
 
 /// It tries to load the config from the file, if it fails it creates a default config and stores it in
 /// the file

@@ -1,4 +1,4 @@
-use super::super::config::Config;
+use super::Config;
 use std::sync::Mutex;
 use tauri::State;
 

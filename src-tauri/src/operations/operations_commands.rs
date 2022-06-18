@@ -1,8 +1,8 @@
-use super::super::database::{
-  clear_operation_history, get_operation_history, store_operation, Operation,
-};
 use super::super::maths::{evaluate, get_result};
 use super::super::parser::Context;
+use super::operations_service::{
+  clear_operation_history, get_operation_history, store_operation, Operation,
+};
 use rusqlite::Connection;
 use std::result::Result;
 use std::sync::Mutex;

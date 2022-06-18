@@ -1,4 +1,4 @@
-use super::database::clear_operation_history;
+use super::operations::clear_operation_history;
 use rusqlite::Connection;
 use std::sync::Mutex;
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu, WindowMenuEvent};

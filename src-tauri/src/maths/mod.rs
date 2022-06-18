@@ -1,4 +1,3 @@
-use super::database::store_variable;
 use super::parser::{eval_str_with_context, Context, Error};
 
 pub fn evaluate<S: AsRef<str>>(input: S, context: &Context) -> Result<f64, Error> {

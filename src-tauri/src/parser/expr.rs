@@ -231,21 +231,29 @@ mod tests {
         let y = 5.;
         assert_eq!(
             eval_str_with_context("phi(2.)", Context::new().func("phi", |x| x + y + 3.)),
-            Ok(2. + y + 3.)
+            Ok((None, 2. + y + 3.))
         );
         assert_eq!(
             eval_str_with_context(
                 "phi(2., 3.)",
                 Context::new().func2("phi", |x, y| x + y + 3.)
             ),
-            Ok(2. + 3. + 3.)
+            Ok((None, 2. + 3. + 3.))
         );
         assert_eq!(
             eval_str_with_context(
                 "phi(2., 3.)",
                 Context::new().funcn("phi", |xs: &[f64]| xs[0] + xs[1], 2)
             ),
-            Ok(2. + 3.)
+            Ok((None, 2. + 3.))
+        );
+
+        assert_eq!(
+            eval_str_with_context(
+                "alpha = 54+34",
+                Context::new().funcn("phi", |xs: &[f64]| xs[0] + xs[1], 2)
+            ),
+            Ok((Some("alpha".into()), 54. + 34.))
         );
     }
 

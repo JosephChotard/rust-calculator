@@ -1,4 +1,4 @@
-use super::context::{builtin, ContextProvider};
+use super::context::ContextProvider;
 use super::extra_math::factorial;
 use super::parsers::{starts_with_assignment, Token};
 use super::shunting_yard::to_rpn;
@@ -115,42 +115,6 @@ impl Expr {
         }
         Ok(r)
     }
-
-    // Checks that every variable and function in the expression is defined in the context.
-    //
-    // Err is returned if any of the variables or functions are not defined.
-    pub fn check_context<C: ContextProvider>(&self, ctx: C) -> Result<(), Error> {
-        for t in &self.rpn {
-            match *t {
-                Token::Var(ref name) => {
-                    if ctx.get_var(name).is_none() {
-                        return Err(Error::UnknownVariable(name.clone()));
-                    }
-                }
-                Token::Func(ref name, Some(i)) => {
-                    let v = vec![0.; i];
-                    if let Err(e) = ctx.eval_func(name, &v) {
-                        return Err(Error::Function(name.to_owned(), e));
-                    }
-                }
-                Token::Func(_, None) => {
-                    return Err(Error::EvalError(format!(
-                        "expr::check_context: Unexpected token: {:?}",
-                        *t
-                    )));
-                }
-                _ => {}
-            }
-        }
-        Ok(())
-    }
-}
-
-/// Evaluates a string with built-in constants and functions.
-pub fn eval_str<S: AsRef<str>>(expr: S) -> Result<f64, Error> {
-    let expr = Expr::from_str(expr.as_ref())?;
-
-    expr.eval_with_context(builtin())
 }
 
 /// Evaluates a string with the given context.
@@ -194,35 +158,81 @@ impl FromStr for Expr {
 
 #[cfg(test)]
 mod tests {
+    use super::super::context::builtin;
     use super::*;
 
     #[test]
     fn test_eval_str() {
-        assert_eq!(eval_str("2 + 3"), Ok(5.));
-        assert_eq!(eval_str("2 + (3 + 4)"), Ok(9.));
-        assert_eq!(eval_str("-2^(4 - 3) * (3 + 4)"), Ok(-14.));
-        assert_eq!(eval_str("-2*3! + 1"), Ok(-11.));
-        assert_eq!(eval_str("-171!"), Ok(std::f64::NEG_INFINITY));
-        assert_eq!(eval_str("150!/148!"), Ok(22350.));
-        assert_eq!(eval_str("a + 3"), Err(Error::UnknownVariable("a".into())));
-        assert_eq!(eval_str("round(sin (pi) * cos(0))"), Ok(0.));
-        assert_eq!(eval_str("round( sqrt(3^2 + 4^2)) "), Ok(5.));
-        assert_eq!(eval_str("max(1.)"), Ok(1.));
-        assert_eq!(eval_str("max(1., 2., -1)"), Ok(2.));
-        assert_eq!(eval_str("min(1., 2., -1)"), Ok(-1.));
+        let context = builtin();
+        assert_eq!(eval_str_with_context("2 + 3", &context), Ok((None, 5.)));
         assert_eq!(
-            eval_str("sin(1.) + cos(2.)"),
-            Ok((1f64).sin() + (2f64).cos())
+            eval_str_with_context("2 + (3 + 4)", &context),
+            Ok((None, 9.))
         );
-        assert_eq!(eval_str("10 % 9"), Ok(10f64 % 9f64));
+        assert_eq!(
+            eval_str_with_context("-2^(4 - 3) * (3 + 4)", &context),
+            Ok((None, -14.))
+        );
+        assert_eq!(
+            eval_str_with_context("-2*3! + 1", &context),
+            Ok((None, -11.))
+        );
+        assert_eq!(
+            eval_str_with_context("-171!", &context),
+            Ok((None, std::f64::NEG_INFINITY))
+        );
+        assert_eq!(
+            eval_str_with_context("150!/148!", &context),
+            Ok((None, 22350.))
+        );
+        assert_eq!(
+            eval_str_with_context("a + 3", &context),
+            Err(Error::UnknownVariable("a".into()))
+        );
+        assert_eq!(
+            eval_str_with_context("round(sin (pi) * cos(0))", &context),
+            Ok((None, 0.))
+        );
+        assert_eq!(
+            eval_str_with_context("round( sqrt(3^2 + 4^2)) ", &context),
+            Ok((None, 5.))
+        );
+        assert_eq!(eval_str_with_context("max(1.)", &context), Ok((None, 1.)));
+        assert_eq!(
+            eval_str_with_context("max(1., 2., -1)", &context),
+            Ok((None, 2.))
+        );
+        assert_eq!(
+            eval_str_with_context("min(1., 2., -1)", &context),
+            Ok((None, -1.))
+        );
+        assert_eq!(
+            eval_str_with_context("sin(1.) + cos(2.)", &context),
+            Ok((None, (1f64).sin() + (2f64).cos()))
+        );
+        assert_eq!(
+            eval_str_with_context("10 % 9", &context),
+            Ok((None, 10f64 % 9f64))
+        );
 
-        assert!(matches!(eval_str("0.5!"), Err(Error::EvalError { .. })));
+        assert!(matches!(
+            eval_str_with_context("0.5!", &context),
+            Err(Error::EvalError { .. })
+        ));
     }
 
     #[test]
     fn test_builtins() {
-        assert_eq!(eval_str("atan2(1.,2.)"), Ok((1f64).atan2(2.)));
-        assert_eq!(eval_str("sqrt(8)"), Ok(8f64.sqrt()));
+        let context = builtin();
+
+        assert_eq!(
+            eval_str_with_context("atan2(1.,2.)", &context),
+            Ok((None, (1f64).atan2(2.)))
+        );
+        assert_eq!(
+            eval_str_with_context("sqrt(8)", &context),
+            Ok((None, 8f64.sqrt()))
+        );
     }
 
     #[test]
@@ -267,27 +277,5 @@ mod tests {
         );
 
         assert_eq!(Expr::from_str("a+b+2").unwrap().assign_to, None,);
-    }
-
-    #[test]
-    fn test_check_context() {
-        use super::super::context::Context;
-        let expr = Expr::from_str("a+b+2").unwrap();
-        assert!(matches!(
-            expr.check_context(Context::new()),
-            Err(Error::UnknownVariable { .. })
-        ));
-
-        let expr = Expr::from_str("a+b+2").unwrap();
-        assert!(matches!(
-            expr.check_context(Context::new().var("a", 1.).var("b", 2.)),
-            Ok(())
-        ));
-
-        let expr = Expr::from_str("undef(3,4)").unwrap();
-        assert!(matches!(
-            expr.check_context(Context::new().func("undef", |_| 0.)),
-            Err(Error::Function { .. })
-        ));
     }
 }

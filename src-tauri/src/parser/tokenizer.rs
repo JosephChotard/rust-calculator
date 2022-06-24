@@ -30,15 +30,7 @@ impl fmt::Display for ParserError {
   }
 }
 
-impl std::error::Error for ParserError {
-  fn description(&self) -> &str {
-    match *self {
-      ParserError::UnexpectedToken(_) => "unexpected token",
-      ParserError::MissingRParen(_) => "missing right parenthesis",
-      ParserError::MissingArgument => "missing argument",
-    }
-  }
-}
+impl std::error::Error for ParserError {}
 
 #[derive(Debug, Clone, Copy)]
 enum TokenizerState {

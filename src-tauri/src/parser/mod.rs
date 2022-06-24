@@ -36,15 +36,15 @@ impl fmt::Display for Error {
         write!(f, "Evaluation error: function `{}`: {}", name, e)
       }
       Error::ParseError(ref e) => {
-        write!(f, "Parse error: ");
+        write!(f, "Parse error: ").expect("Could not write to formatter.");
         e.fmt(f)
       }
       Error::RPNError(ref e) => {
-        write!(f, "RPN error: ");
+        write!(f, "RPN error: ").expect("Could not write to formatter.");
         e.fmt(f)
       }
       Error::EvalError(ref e) => {
-        write!(f, "Eval error: ");
+        write!(f, "Eval error: ").expect("Could not write to formatter.");
         e.fmt(f)
       }
     }
@@ -64,16 +64,6 @@ impl From<RPNError> for Error {
 }
 
 impl std::error::Error for Error {
-  fn description(&self) -> &str {
-    match *self {
-      Error::UnknownVariable(_) => "unknown variable",
-      Error::Function(_, _) => "function evaluation error",
-      Error::EvalError(_) => "eval error",
-      Error::ParseError(ref e) => e.description(),
-      Error::RPNError(ref e) => e.description(),
-    }
-  }
-
   fn cause(&self) -> Option<&dyn std::error::Error> {
     match *self {
       Error::ParseError(ref e) => Some(e),

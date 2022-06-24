@@ -22,7 +22,7 @@ pub trait ContextProvider {
     Err(FuncEvalError::UnknownFunction)
   }
 
-  fn var<S: Into<String>>(&mut self, var: S, value: f64) -> &mut Self {
+  fn var<S: Into<String>>(&mut self, _var: S, _value: f64) -> &mut Self {
     self
   }
 }

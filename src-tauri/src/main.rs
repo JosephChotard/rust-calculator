@@ -3,14 +3,13 @@
   windows_subsystem = "windows"
 )]
 use database::get_connection;
-use parser::builtin;
+use operations::create_context_from_db;
 use std::sync::Mutex;
 
 extern crate nom;
 
 mod commands;
 mod database;
-mod maths;
 mod menu;
 mod operations;
 mod parser;
@@ -20,7 +19,7 @@ fn main() {
   let config = system::get_config();
 
   let conn = get_connection().expect("Could not get connection");
-  let context = builtin();
+  let context = create_context_from_db(&conn);
 
   tauri::Builder::default()
     .menu(menu::init())

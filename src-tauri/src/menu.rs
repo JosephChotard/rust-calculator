@@ -1,4 +1,5 @@
 use super::operations::clear_operation_history;
+use super::parser::Context;
 use rusqlite::Connection;
 use std::sync::Mutex;
 use tauri::{CustomMenuItem, Manager, Menu, MenuItem, Submenu, WindowMenuEvent};
@@ -22,7 +23,10 @@ pub fn init() -> Menu {
 pub fn on_menu_event(event: WindowMenuEvent) {
   match event.menu_item_id() {
     "clear_history" => {
-      match clear_operation_history(&event.window().state::<Mutex<Connection>>().lock().unwrap()) {
+      match clear_operation_history(
+        &event.window().state::<Mutex<Connection>>().lock().unwrap(),
+        &mut event.window().state::<Mutex<Context>>().lock().unwrap(),
+      ) {
         Ok(_) => {
           event.window().emit_all("history_cleared", {}).unwrap();
         }

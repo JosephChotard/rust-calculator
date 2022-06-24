@@ -150,6 +150,10 @@ impl<'a> Context<'a> {
     }
   }
 
+  pub fn clear(&mut self) {
+    self.vars.clear();
+  }
+
   /// Adds a new variable/constant.
   pub fn var<S: Into<String>>(&mut self, var: S, value: f64) -> &mut Self {
     self.vars.insert(var.into(), value);

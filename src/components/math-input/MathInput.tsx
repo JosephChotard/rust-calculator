@@ -1,6 +1,6 @@
 import { tauri } from "@tauri-apps/api"
-import { FC, useContext, useState } from "react"
-import { Operation, OperationHistoryContext } from "../operation-history"
+import { FC, useState } from "react"
+import { Operation } from "../operation-history"
 import { Box } from "../system/box/Box"
 import { Text } from "../typography"
 import * as styles from "./MathInput.css"
@@ -9,11 +9,14 @@ import * as styles from "./MathInput.css"
 const MathInput: FC = () => {
   const [equation, setEquation] = useState("")
   const [response, setResponse] = useState("")
-  const { addToHistory } = useContext(OperationHistoryContext)
 
   const updateEquation = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value.toLowerCase()
+    let input = event.target.value.toLowerCase()
+    if (["+", "-", "*", "/"].includes(input)) {
+      input = "ans" + input
+    }
     setEquation(input)
+
     if (input.length > 0) {
       tauri.invoke<number>("get_result_command", {
         input: input
@@ -22,7 +25,11 @@ const MathInput: FC = () => {
           setResponse(result?.toString() ?? "Infinity")
         })
         .catch((error) => {
-          setResponse(error?.toString() ?? "")
+          if (error === "command") {
+            setResponse("")
+          } else {
+            setResponse(error?.toString() ?? "")
+          }
         })
     } else {
       setResponse("")
@@ -32,11 +39,9 @@ const MathInput: FC = () => {
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault()
-      console.log(equation)
       tauri.invoke<Operation>('store_operation_command', {
         input: equation,
-      }).then((operation) => {
-        addToHistory(operation)
+      }).then(() => {
         setEquation("")
         setResponse("")
       })
@@ -49,6 +54,10 @@ const MathInput: FC = () => {
     >
       <input
         className={styles.input}
+        spellCheck="false"
+        autoCapitalize="off"
+        autoComplete="off"
+        autoCorrect="off"
         type="text"
         value={equation}
         onChange={updateEquation}

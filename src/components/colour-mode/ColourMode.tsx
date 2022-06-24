@@ -23,7 +23,6 @@ export function ColorModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     tauri.invoke<boolean>('get_system_theme').then((dark_mode) => {
-      console.log(dark_mode)
       setter(dark_mode ? darkTheme : lightTheme)
     })
   }, [])

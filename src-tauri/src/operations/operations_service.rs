@@ -1,6 +1,7 @@
 use super::super::parser::{builtin, eval_str_with_context, Context, Error as ParserError};
 use rusqlite::{params, Connection, Result};
 use serde::{Deserialize, Serialize};
+use tauri::Window;
 
 pub fn create_context_from_db<'a>(conn: &Connection) -> Context<'a> {
   let mut context = builtin();
@@ -23,6 +24,31 @@ pub fn create_context_from_db<'a>(conn: &Connection) -> Context<'a> {
   context
 }
 
+pub fn check_if_command(input: &str) -> bool {
+  let commands = vec!["clear", "exit"];
+  commands.contains(&input)
+}
+
+pub fn run_command(input: &str, conn: &Connection, context: &mut Context, window: &Window) {
+  match input {
+    "clear" => {
+      match clear_operation_history(conn, context) {
+        Ok(_) => {
+          window
+            .emit("history_cleared", {})
+            .expect("Could not emit event");
+        }
+        Err(e) => println!("Error: {}", e),
+      };
+    }
+    "exit" => {}
+    _ => {}
+  };
+}
+
+// pub fn run_command(input: &str) -> bool {
+
+// }
 /// It takes a string and a context, and returns a result
 ///
 /// Arguments:
@@ -70,6 +96,13 @@ pub fn save_variable<S: AsRef<str>>(
         }
         None => {}
       };
+      conn
+        .execute(
+          "INSERT OR REPLACE INTO variables (name, value) VALUES (?1, ?2)",
+          params!["ans", result],
+        )
+        .expect("Could not save ans");
+      context.var("ans", result);
       Ok(result)
     }
     Err(e) => Err(e),
@@ -137,6 +170,7 @@ pub fn store_operation(
   operation: &str,
   conn: &mut Connection,
   context: &mut Context,
+  window: Window,
 ) -> Result<Operation, ParserError> {
   match save_variable(operation, context, conn) {
     Ok(result) => {
@@ -146,10 +180,14 @@ pub fn store_operation(
           params![operation, result],
         )
         .expect("Could not store in database");
-      Ok(Operation {
+      let op = Operation {
         operation: operation.to_string(),
         result: result,
-      })
+      };
+      window
+        .emit("add_to_history", &op)
+        .expect("Could not emit add_to_history");
+      Ok(op)
     }
     Err(e) => Err(e),
   }

@@ -25,23 +25,28 @@ export const OperationHistoryProvider: FC<OperationHistoryProviderProps> = ({ ch
   const [history, setHistory] = useState<Operation[]>([])
 
   const addToHistory = (operation: Operation) => {
-    setHistory([...history, operation])
+    console.log("addToHistory", operation)
+    setHistory(history => [...history, operation])
   }
 
   useEffect(() => {
     tauri.invoke<Operation[]>('get_operation_history_command').then((history) => {
-      console.log(history)
       setHistory(history)
     })
-    let unlisten: UnlistenFn
+    let unlisten_clearHistory: UnlistenFn
+    let unlisten_addToHistory: UnlistenFn
     (async () => {
-      unlisten = await listen('history_cleared', (history) => {
+      unlisten_clearHistory = await listen('history_cleared', (history) => {
         setHistory([])
+      })
+      unlisten_addToHistory = await listen<Operation>('add_to_history', (event) => {
+        addToHistory(event.payload)
       })
     })()
 
     return () => {
-      unlisten?.()
+      unlisten_clearHistory?.()
+      unlisten_addToHistory?.()
     }
   }, [])
 

@@ -1,11 +1,12 @@
 use super::super::parser::Context;
 use super::operations_service::{
-  calculate_result, clear_operation_history, get_operation_history, store_operation, Operation,
+  calculate_result, check_if_command, clear_operation_history, get_operation_history, run_command,
+  store_operation, Operation,
 };
 use rusqlite::Connection;
 use std::result::Result;
 use std::sync::Mutex;
-use tauri::State;
+use tauri::{State, Window};
 
 /// Stores an operation and its result in the database
 ///
@@ -22,14 +23,28 @@ use tauri::State;
 pub fn store_operation_command(
   conn: State<Mutex<Connection>>,
   parser_context: State<Mutex<Context>>,
+  window: Window,
   input: &str,
-) -> Result<Operation, String> {
+) -> Result<(), String> {
+  match check_if_command(&input) {
+    true => {
+      run_command(
+        &input,
+        &conn.lock().unwrap(),
+        &mut parser_context.lock().unwrap(),
+        &window,
+      );
+      return Ok(());
+    }
+    false => {}
+  };
   match store_operation(
     input,
     &mut conn.lock().unwrap(),
     &mut parser_context.lock().unwrap(),
+    window,
   ) {
-    Ok(result) => Ok(result),
+    Ok(_) => Ok(()),
     Err(err) => {
       return Err(err.to_string());
     }
@@ -41,6 +56,10 @@ pub fn get_result_command(
   input: &str,
   parser_context: State<Mutex<Context>>,
 ) -> Result<f64, String> {
+  match check_if_command(&input) {
+    true => return Err("command".to_string()),
+    false => {}
+  };
   match calculate_result(input, &parser_context.lock().unwrap()) {
     Ok(result) => Ok(result),
     Err(err) => Err(err.to_string()),

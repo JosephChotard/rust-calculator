@@ -1,21 +1,28 @@
 import { tauri } from "@tauri-apps/api"
-import { FC, useState } from "react"
+import { FC, useContext, useEffect, useState } from "react"
 import { Operation } from "../operation-history"
 import { Box } from "../system/box/Box"
 import { Text } from "../typography"
+import { CurrentOperationContext } from "./CurrentOperationContext"
 import * as styles from "./MathInput.css"
 
 
 const MathInput: FC = () => {
-  const [equation, setEquation] = useState("")
+  const { operation, setOperation } = useContext(CurrentOperationContext)
   const [response, setResponse] = useState("")
 
-  const updateEquation = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let input = event.target.value.toLowerCase()
+
+    /* Allow the user to start a new equation without having to type in `ans` first. */
     if (["+", "-", "*", "/"].includes(input)) {
       input = "ans" + input
     }
-    setEquation(input)
+    updateEquation(input)
+    setOperation(input)
+  }
+
+  const updateEquation = (input: string) => {
 
     if (input.length > 0) {
       tauri.invoke<number>("get_result_command", {
@@ -36,13 +43,17 @@ const MathInput: FC = () => {
     }
   }
 
+  useEffect(() => {
+    updateEquation(operation)
+  }, [operation])
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       event.preventDefault()
       tauri.invoke<Operation>('store_operation_command', {
-        input: equation,
+        input: operation,
       }).then(() => {
-        setEquation("")
+        setOperation("")
         setResponse("")
       })
     }
@@ -59,8 +70,8 @@ const MathInput: FC = () => {
         autoComplete="off"
         autoCorrect="off"
         type="text"
-        value={equation}
-        onChange={updateEquation}
+        value={operation}
+        onChange={handleOnChange}
         onKeyDown={handleKeyDown}
       />
       {response && (

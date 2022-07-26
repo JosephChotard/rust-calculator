@@ -14,7 +14,7 @@ interface OperationHistoryContextValues {
 
 export const OperationHistoryContext = createContext<OperationHistoryContextValues>({
   history: [],
-  addToHistory: (operation) => { },
+  addToHistory: () => { },
 })
 
 interface OperationHistoryProviderProps {
@@ -25,7 +25,6 @@ export const OperationHistoryProvider: FC<OperationHistoryProviderProps> = ({ ch
   const [history, setHistory] = useState<Operation[]>([])
 
   const addToHistory = (operation: Operation) => {
-    console.log("addToHistory", operation)
     setHistory(history => [...history, operation])
   }
 
@@ -35,6 +34,7 @@ export const OperationHistoryProvider: FC<OperationHistoryProviderProps> = ({ ch
     })
     let unlisten_clearHistory: UnlistenFn
     let unlisten_addToHistory: UnlistenFn
+    let isCancelled = false;
     (async () => {
       unlisten_clearHistory = await listen('history_cleared', (history) => {
         setHistory([])
@@ -42,9 +42,14 @@ export const OperationHistoryProvider: FC<OperationHistoryProviderProps> = ({ ch
       unlisten_addToHistory = await listen<Operation>('add_to_history', (event) => {
         addToHistory(event.payload)
       })
+      if (isCancelled) {
+        unlisten_clearHistory?.()
+        unlisten_addToHistory?.()
+      }
     })()
 
     return () => {
+      isCancelled = true
       unlisten_clearHistory?.()
       unlisten_addToHistory?.()
     }

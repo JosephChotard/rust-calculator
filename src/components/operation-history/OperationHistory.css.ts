@@ -27,5 +27,13 @@ export const result = style([
     }
   }),
   {
+    display: "inline",
+    padding: 0,
+    margin: 0,
+    border: 0,
+    background: "transparent",
+    color: "inherit",
+    font: "inherit",
+    cursor: "pointer",
   }
 ])

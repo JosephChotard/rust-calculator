@@ -1,5 +1,5 @@
 import { ColorModeToggle } from '../../components/colour-mode/ColourMode'
-import MathInput from '../../components/math-input'
+import MathInput, { CurrentOperationProvider } from '../../components/math-input'
 import { OperationHistory, OperationHistoryProvider } from '../../components/operation-history'
 import { Box } from '../../components/system/box/Box'
 
@@ -24,21 +24,23 @@ function CalculationsPage() {
         <ColorModeToggle />
       </Box>
       <OperationHistoryProvider>
-        <Box
-          display="flex"
-          flexDirection="column"
-          justifyContent="flex-end"
-          height="full"
-        >
-          <OperationHistory />
+        <CurrentOperationProvider>
           <Box
-            position='fixed'
-            bottom='none'
-            width='full'
+            display="flex"
+            flexDirection="column"
+            justifyContent="flex-end"
+            height="full"
           >
-            <MathInput />
+            <OperationHistory />
+            <Box
+              position='fixed'
+              bottom='none'
+              width='full'
+            >
+              <MathInput />
+            </Box>
           </Box>
-        </Box>
+        </CurrentOperationProvider>
       </OperationHistoryProvider>
     </Box>
   )

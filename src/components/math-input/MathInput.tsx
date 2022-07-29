@@ -11,10 +11,7 @@ const useFocus = () => {
   const htmlElRef = useRef<HTMLInputElement>(null)
   const setFocus = () => {
     const currentEl = htmlElRef.current
-    setTimeout(() => {
-      console.log("set focus", currentEl)
-      currentEl && currentEl.focus()
-    }, 20)
+    currentEl && currentEl.focus()
   }
   return [htmlElRef, setFocus] as const
 }
@@ -31,12 +28,11 @@ const MathInput: FC = () => {
     if (["+", "-", "*", "/"].includes(input)) {
       input = "ans" + input
     }
-    updateEquation(input)
+    onEquationUpdated(input)
     setOperation(input)
   }
 
-  const updateEquation = (input: string) => {
-
+  const onEquationUpdated = (input: string) => {
     if (input.length > 0) {
       tauri.invoke<number>("get_result_command", {
         input: input
@@ -57,8 +53,20 @@ const MathInput: FC = () => {
   }
 
   useEffect(() => {
+    const handleKeyDown = () => {
+      setFocus()
+    }
 
-    updateEquation(operation)
+    document.addEventListener('keydown', handleKeyDown)
+
+    // Don't forget to clean up
+    return function cleanup() {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [setFocus])
+
+  useEffect(() => {
+    onEquationUpdated(operation)
   }, [operation])
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -80,7 +88,6 @@ const MathInput: FC = () => {
       <input
         autoFocus
         ref={inputRef}
-        onBlur={setFocus}
         className={styles.input}
         spellCheck="false"
         autoCapitalize="off"

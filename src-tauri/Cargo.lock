@@ -3,22 +3,6 @@
 version = 3
 
 [[package]]
-name = "Calcular"
-version = "0.1.0"
-dependencies = [
- "confy",
- "dark-light",
- "directories 4.0.1",
- "fnv",
- "nom",
- "rusqlite",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
-]
-
-[[package]]
 name = "adler"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -339,6 +323,22 @@ dependencies = [
  "glib-sys",
  "libc",
  "system-deps 6.0.2",
+]
+
+[[package]]
+name = "calcular"
+version = "0.1.0"
+dependencies = [
+ "confy",
+ "dark-light",
+ "directories 4.0.1",
+ "fnv",
+ "nom",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
 ]
 
 [[package]]

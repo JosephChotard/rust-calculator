@@ -1,5 +1,5 @@
 import { tauri } from "@tauri-apps/api"
-import { FC, useContext, useEffect, useState } from "react"
+import { FC, useContext, useEffect, useRef, useState } from "react"
 import { Operation } from "../operation-history"
 import { Box } from "../system/box/Box"
 import { Text } from "../typography"
@@ -7,9 +7,22 @@ import { CurrentOperationContext } from "./CurrentOperationContext"
 import * as styles from "./MathInput.css"
 
 
+const useFocus = () => {
+  const htmlElRef = useRef<HTMLInputElement>(null)
+  const setFocus = () => {
+    const currentEl = htmlElRef.current
+    setTimeout(() => {
+      console.log("set focus", currentEl)
+      currentEl && currentEl.focus()
+    }, 20)
+  }
+  return [htmlElRef, setFocus] as const
+}
+
 const MathInput: FC = () => {
   const { operation, setOperation } = useContext(CurrentOperationContext)
   const [response, setResponse] = useState("")
+  const [inputRef, setFocus] = useFocus()
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let input = event.target.value.toLowerCase()
@@ -44,6 +57,7 @@ const MathInput: FC = () => {
   }
 
   useEffect(() => {
+
     updateEquation(operation)
   }, [operation])
 
@@ -64,6 +78,9 @@ const MathInput: FC = () => {
       className={styles.inputWrapper}
     >
       <input
+        autoFocus
+        ref={inputRef}
+        onBlur={setFocus}
         className={styles.input}
         spellCheck="false"
         autoCapitalize="off"

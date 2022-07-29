@@ -1,11 +1,11 @@
 [package]
-name = "Calcular"
+name = "calcular"
 version = "0.1.0"
 description = "The best calculator in the world"
 authors = ["Joseph Chotard"]
 license = ""
 repository = ""
-default-run = "Calcular"
+default-run = "calcular"
 edition = "2021"
 rust-version = "1.57"
 

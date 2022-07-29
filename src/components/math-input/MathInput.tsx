@@ -1,5 +1,5 @@
 import { tauri } from "@tauri-apps/api"
-import { FC, useContext, useEffect, useState } from "react"
+import { FC, useContext, useEffect, useRef, useState } from "react"
 import { Operation } from "../operation-history"
 import { Box } from "../system/box/Box"
 import { Text } from "../typography"
@@ -7,9 +7,19 @@ import { CurrentOperationContext } from "./CurrentOperationContext"
 import * as styles from "./MathInput.css"
 
 
+const useFocus = () => {
+  const htmlElRef = useRef<HTMLInputElement>(null)
+  const setFocus = () => {
+    const currentEl = htmlElRef.current
+    currentEl && currentEl.focus()
+  }
+  return [htmlElRef, setFocus] as const
+}
+
 const MathInput: FC = () => {
   const { operation, setOperation } = useContext(CurrentOperationContext)
   const [response, setResponse] = useState("")
+  const [inputRef, setFocus] = useFocus()
 
   const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let input = event.target.value.toLowerCase()
@@ -18,12 +28,11 @@ const MathInput: FC = () => {
     if (["+", "-", "*", "/"].includes(input)) {
       input = "ans" + input
     }
-    updateEquation(input)
+    onEquationUpdated(input)
     setOperation(input)
   }
 
-  const updateEquation = (input: string) => {
-
+  const onEquationUpdated = (input: string) => {
     if (input.length > 0) {
       tauri.invoke<number>("get_result_command", {
         input: input
@@ -44,7 +53,20 @@ const MathInput: FC = () => {
   }
 
   useEffect(() => {
-    updateEquation(operation)
+    const handleKeyDown = () => {
+      setFocus()
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    // Don't forget to clean up
+    return function cleanup() {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [setFocus])
+
+  useEffect(() => {
+    onEquationUpdated(operation)
   }, [operation])
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -64,6 +86,8 @@ const MathInput: FC = () => {
       className={styles.inputWrapper}
     >
       <input
+        autoFocus
+        ref={inputRef}
         className={styles.input}
         spellCheck="false"
         autoCapitalize="off"

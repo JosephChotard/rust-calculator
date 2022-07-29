@@ -7,7 +7,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "calcular",
+    "productName": "Calcular",
     "version": "0.1.0"
   },
   "tauri": {

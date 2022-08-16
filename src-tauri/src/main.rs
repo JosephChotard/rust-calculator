@@ -27,6 +27,12 @@ fn main() {
     .manage(Mutex::new(config))
     .manage(Mutex::new(conn))
     .manage(Mutex::new(context))
+    .on_window_event(|event| match event.event() {
+      tauri::WindowEvent::Destroyed => {
+        std::process::exit(0);
+      }
+      _ => (),
+    })
     .invoke_handler(commands::get_handlers())
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
